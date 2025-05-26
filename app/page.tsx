@@ -1,103 +1,178 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState, useEffect, useRef } from "react"
+import { AnimatedBackground } from "@/components/AnimatedBackground"
+import { Navigation } from "@/components/Navigation"
+import { HeroSection } from "@/components/HeroSection"
+import { FeaturesSection } from "@/components/FeatureSection"
+import { VideoCarousel } from "@/components/VideoCaraousel"
+import { StatsSection } from "@/components/StatsSection"
+import { TestimonialsSection } from "@/components/Testimonial"
+import { NewsletterSection } from "@/components/NewsLetterSignup"
+import { AboutSection } from "@/components/AboutSection"
+import { CTASection } from "@/components/CTASection"
+import { Footer } from "@/components/Footer"
+import { StickyButtons } from "@/components/StickyButton"
+
+// Import helper utils
+import {
+  formatDuration,
+  animateCounter,
+  fetchVideos,
+  fetchChannelStats,
+} from "@/lib/utils" // adjust path if needed
+
+export default function TechnicalRanchLanding() {
+  const [isVisible, setIsVisible] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
+  const [email, setEmail] = useState("")
+  const [showScrollTop, setShowScrollTop] = useState(false)
+  const carouselRef = useRef<HTMLDivElement>(null)
+
+  // Animated counters
+  const [subscriberCount, setSubscriberCount] = useState(0)
+  const [videoCount, setVideoCount] = useState(0)
+  const [viewCount, setViewCount] = useState(0)
+
+  const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY
+  const CHANNEL_ID = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID
+
+  useEffect(() => {
+    setIsVisible(true)
+
+    setTimeout(() => {
+      animateCounter(1020, setSubscriberCount)
+      animateCounter(183, setVideoCount)
+      animateCounter(250000, setViewCount)
+    }, 500)
+
+    // Scroll listener for back to top button
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400)
+    }
+    window.addEventListener("scroll", handleScroll)
+
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  const [featuredVideos, setFeaturedVideos] = useState<
+    {
+      videoId: string
+      title: string
+      thumbnail: string
+      views: string
+      duration: string
+    }[]
+  >([])
+
+  const latestVideo = featuredVideos.length > 0 ? {
+  videoId: featuredVideos[0].videoId,
+  title: featuredVideos[0].title,
+  description: featuredVideos[0].title, 
+  views: featuredVideos[0].views,
+  duration: featuredVideos[0].duration,
+} : null
+
+
+  useEffect(() => {
+    if (!API_KEY || !CHANNEL_ID) {
+      console.error("Missing YouTube API key or Channel ID")
+      return
+    }
+
+    const loadVideos = async () => {
+      try {
+        const videos = await fetchVideos(API_KEY, CHANNEL_ID, formatDuration)
+        setFeaturedVideos(videos)
+        setVideoCount(videos.length)
+
+        const stats = await fetchChannelStats(API_KEY, CHANNEL_ID)
+        setSubscriberCount(stats.subscriberCount)
+        setViewCount(stats.viewCount)
+      } catch (error) {
+        console.error("Failed to fetch videos or stats", error)
+      }
+    }
+
+    loadVideos()
+  }, [API_KEY, CHANNEL_ID])
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
+  const nextVideo = () => {
+    setCurrentVideoIndex((prev) => (prev + 1) % featuredVideos.length)
+  }
+
+  const prevVideo = () => {
+    setCurrentVideoIndex((prev) => (prev - 1 + featuredVideos.length) % featuredVideos.length)
+  }
+
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log("Newsletter signup:", email)
+    setEmail("")
+    alert("Thanks for subscribing!")
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div
+      className={`min-h-screen transition-colors duration-300 ${
+        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+      }`}
+    >
+      <AnimatedBackground darkMode={darkMode} />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <Navigation darkMode={darkMode} setDarkMode={setDarkMode} />
+
+      <HeroSection
+        darkMode={darkMode}
+        isVisible={isVisible}
+        subscriberCount={subscriberCount}
+        videoCount={videoCount}
+        latestVideo={latestVideo}
+      />
+
+      <FeaturesSection darkMode={darkMode} />
+
+      <VideoCarousel
+        darkMode={darkMode}
+        featuredVideos={featuredVideos}
+        currentVideoIndex={currentVideoIndex}
+        prevVideo={prevVideo}
+        nextVideo={nextVideo}
+        carouselRef={carouselRef}
+      />
+
+      <StatsSection
+        darkMode={darkMode}
+        subscriberCount={subscriberCount}
+        videoCount={videoCount}
+        viewCount={viewCount}
+      />
+
+      <TestimonialsSection darkMode={darkMode} />
+
+      <NewsletterSection
+        darkMode={darkMode}
+        email={email}
+        setEmail={setEmail}
+        handleNewsletterSubmit={handleNewsletterSubmit}
+      />
+
+      <AboutSection darkMode={darkMode} videoCount={videoCount} />
+
+      <CTASection darkMode={darkMode} />
+
+      <Footer darkMode={darkMode} scrollToTop={scrollToTop} />
+
+      <StickyButtons
+        darkMode={darkMode}
+        showScrollTop={showScrollTop}
+        scrollToTop={scrollToTop}
+      />
     </div>
-  );
+  )
 }
