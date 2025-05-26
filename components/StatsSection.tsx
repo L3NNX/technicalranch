@@ -62,42 +62,49 @@ function StatCard({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden transition-all duration-700 transform",
-        darkMode ? "bg-gray-900/50 border-gray-700" : "bg-white border-gray-200",
+        "relative overflow-hidden transition-all duration-700 transform group hover:scale-105",
+        darkMode 
+          ? "bg-gray-900/50 border-gray-700 hover:bg-gray-900/80" 
+          : "bg-white/80 border-gray-200 hover:shadow-lg",
         inView ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
       )}
       style={{ transitionDelay: `${delay}ms` }}
     >
       <div
         className={cn(
-          "absolute inset-0 opacity-10 transition-opacity",
-          darkMode ? "bg-gradient-to-br from-gray-700" : "bg-gradient-to-br from-gray-100"
+          "absolute inset-0 opacity-10 transition-opacity duration-300 group-hover:opacity-20",
+          darkMode 
+            ? "bg-gradient-to-br from-blue-500 to-purple-600" 
+            : "bg-gradient-to-br from-gray-100 to-blue-100"
         )}
       />
       <div className="relative p-8 text-center">
         <div className="flex items-center justify-center space-x-1">
           {stat.prefix && (
             <span className={cn(
-              "text-4xl font-bold",
-              darkMode ? "text-gray-300" : "text-gray-700"
+              "text-4xl md:text-5xl font-bold",
+              darkMode ? "text-gray-300" : "text-gray-900"
             )}>
               {stat.prefix}
             </span>
           )}
-          <span className="text-4xl font-bold tracking-tight">
+          <span className={cn(
+            "text-4xl md:text-5xl font-bold tracking-tight",
+            darkMode ? "text-white" : "text-gray-900"
+          )}>
             {displayValue.toLocaleString()}
           </span>
           {stat.suffix && (
             <span className={cn(
-              "text-4xl font-bold",
-              darkMode ? "text-gray-300" : "text-gray-700"
+              "text-4xl md:text-5xl font-bold",
+              darkMode ? "text-gray-300" : "text-gray-900"
             )}>
               {stat.suffix}
             </span>
           )}
         </div>
         <p className={cn(
-          "mt-2 text-sm font-medium",
+          "mt-4 text-sm font-medium",
           darkMode ? "text-gray-400" : "text-gray-600"
         )}>
           {stat.label}
@@ -123,7 +130,7 @@ export function StatsSection({
   const stats: Stat[] = [
     {
       value: subscriberCount,
-      label: "Subscribers",
+      label: "Growing Subscribers",
       prefix: "",
       suffix: "+",
     },
@@ -133,7 +140,7 @@ export function StatsSection({
     },
     {
       value: viewCount,
-      label: "Total Views",
+      label: "Total Video Views",
       suffix: "+",
     },
   ]
@@ -142,7 +149,7 @@ export function StatsSection({
     return (
       <div className={cn(
         "px-6 lg:px-12 py-20 text-center",
-        darkMode ? "bg-gray-800/50" : "bg-gray-50"
+        darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
       )}>
         <p className="text-red-500">Error loading statistics: {error}</p>
       </div>
@@ -153,7 +160,7 @@ export function StatsSection({
     return (
       <div className={cn(
         "px-6 lg:px-12 py-20",
-        darkMode ? "bg-gray-800/50" : "bg-gray-50"
+        darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
       )}>
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
@@ -162,16 +169,16 @@ export function StatsSection({
                 key={i}
                 className={cn(
                   "animate-pulse",
-                  darkMode ? "bg-gray-900/50 border-gray-700" : "bg-white border-gray-200"
+                  darkMode ? "bg-gray-900/50 border-gray-700" : "bg-white/80 border-gray-200"
                 )}
               >
                 <div className="p-8">
                   <div className={cn(
-                    "h-8 w-24 mx-auto rounded",
+                    "h-10 w-32 mx-auto rounded",
                     darkMode ? "bg-gray-800" : "bg-gray-200"
                   )} />
                   <div className={cn(
-                    "h-4 w-16 mx-auto mt-4 rounded",
+                    "h-4 w-24 mx-auto mt-4 rounded",
                     darkMode ? "bg-gray-800" : "bg-gray-200"
                   )} />
                 </div>
@@ -187,22 +194,27 @@ export function StatsSection({
     <section
       ref={ref}
       className={cn(
-        "px-6 lg:px-12 py-20",
-        darkMode ? "bg-gray-800/50" : "bg-gray-50"
+        "px-6 lg:px-12 py-20 relative overflow-hidden",
+        darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
       )}
     >
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-16">
           <Badge
             variant="outline"
             className={cn(
               "mb-4",
-              darkMode ? "border-gray-700 text-gray-300" : "border-gray-300 text-gray-600"
+              darkMode ? "border-gray-700 text-gray-300" : "border-gray-500 text-gray-700"
             )}
           >
-            Our Impact
+            Our Growth
           </Badge>
-          <h2 className="text-4xl font-bold mb-6">Community Milestones</h2>
+          <h2 className={cn(
+            "text-4xl font-bold mb-6",
+            darkMode ? "text-white" : "text-gray-900"
+          )}>
+            Community Milestones
+          </h2>
           <p className={cn(
             "text-xl max-w-2xl mx-auto",
             darkMode ? "text-gray-300" : "text-gray-600"
