@@ -1,11 +1,68 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { useEffect, useRef, useCallback } from "react"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// Debounce utility
+export function useDebounce<T extends (...args: any[]) => any>(
+  callback: T,
+  delay: number
+): T {
+  const timeoutRef = useRef<NodeJS.Timeout>()
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
+  return useCallback(
+    ((...args) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        callback(...args)
+      }, delay)
+    }) as T,
+    [callback, delay]
+  )
+}
+
+// Throttle utility
+export function useThrottle<T extends (...args: any[]) => any>(
+  callback: T,
+  limit: number
+): T {
+  const inThrottle = useRef(false)
+  
+  return useCallback(
+    ((...args) => {
+      if (!inThrottle.current) {
+        callback(...args)
+        inThrottle.current = true
+        setTimeout(() => {
+          inThrottle.current = false
+        }, limit)
+      }
+    }) as T,
+    [callback, limit]
+  )
+}
+
+// Enhanced formatDuration with memoization
+const durationCache = new Map<string, string>()
 export function formatDuration(isoDuration: string) {
+  if (durationCache.has(isoDuration)) {
+    return durationCache.get(isoDuration)!
+  }
+
   const match = isoDuration.match(/PT(\d+H)?(\d+M)?(\d+S)?/)
   if (!match) return "0:00"
 
@@ -19,173 +76,112 @@ export function formatDuration(isoDuration: string) {
   const m = Math.floor((totalSeconds % 3600) / 60)
   const s = totalSeconds % 60
 
-  if (h > 0) {
-    return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`
-  }
-  return `${m}:${s.toString().padStart(2, "0")}`
+  const result = h > 0
+    ? `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`
+    : `${m}:${s.toString().padStart(2, "0")}`
+
+  durationCache.set(isoDuration, result)
+  return result
 }
 
+// Optimized counter animation
 export function animateCounter(
   target: number,
   setter: (value: number) => void,
   duration = 2000
 ) {
-  let start = 0
-  const increment = target / (duration / 16)
-  const timer = setInterval(() => {
-    start += increment
-    if (start >= target) {
-      setter(target)
-      clearInterval(timer)
-    } else {
-      setter(Math.floor(start))
-    }
-  }, 16)
-}
-
-// --- Types for YouTube API responses ---
-
-interface YouTubeVideoSnippet {
-  title: string
-  thumbnails: {
-    medium: {
-      url: string
+  let start = performance.now()
+  const initialValue = 0
+  
+  const animate = (currentTime: number) => {
+    const elapsed = currentTime - start
+    const progress = Math.min(elapsed / duration, 1)
+    
+    // Easing function for smoother animation
+    const easeOutCubic = 1 - Math.pow(1 - progress, 3)
+    const current = Math.floor(initialValue + (target - initialValue) * easeOutCubic)
+    
+    setter(current)
+    
+    if (progress < 1) {
+      requestAnimationFrame(animate)
     }
   }
-  resourceId?: {
-    videoId: string
+  
+  requestAnimationFrame(animate)
+}
+
+// Batch API requests
+export async function batchRequests<T>(
+  requests: Promise<T>[],
+  batchSize = 3
+): Promise<T[]> {
+  const results: T[] = []
+  
+  for (let i = 0; i < requests.length; i += batchSize) {
+    const batch = requests.slice(i, i + batchSize)
+    const batchResults = await Promise.all(batch)
+    results.push(...batchResults)
+  }
+  
+  return results
+}
+
+// Retry mechanism for API calls
+export async function fetchWithRetry<T>(
+  fetcher: () => Promise<T>,
+  retries = 3,
+  delay = 1000
+): Promise<T> {
+  try {
+    return await fetcher()
+  } catch (error) {
+    if (retries === 0) throw error
+    
+    await new Promise(resolve => setTimeout(resolve, delay))
+    return fetchWithRetry(fetcher, retries - 1, delay * 2)
   }
 }
 
-interface YouTubeVideoStatistics {
-  viewCount: string
-}
-
-interface YouTubeVideoContentDetails {
-  duration: string
-}
-
-interface YouTubeVideoItem {
-  id: string
-  snippet: YouTubeVideoSnippet
-  statistics: YouTubeVideoStatistics
-  contentDetails: YouTubeVideoContentDetails
-}
-
-interface YouTubeSearchItem {
-  id: {
-    videoId: string
-  }
-}
-
-// --- Fetch Functions ---
+// Enhanced YouTube API functions with caching and retry mechanism
+const videoCache = new Map()
+const statsCache = new Map()
 
 export async function fetchVideos(
   API_KEY: string,
   CHANNEL_ID: string,
-  formatDurationFn: (isoDuration: string) => string
+  formatDurationFn: (isoDuration: string) => string,
+  page = 1,
+  pageSize = 5
 ) {
-  const searchRes = await fetch(
-    `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=5&type=video`
-  )
-  const searchData: { items: YouTubeSearchItem[] } = await searchRes.json()
-
-  const videoIds = searchData.items
-    .map((item) => item.id.videoId)
-    .join(",")
-
-  const videosRes = await fetch(
-    `https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds}&part=contentDetails,statistics,snippet`
-  )
-  const videosData: { items: YouTubeVideoItem[] } = await videosRes.json()
-
-  const videos = videosData.items.map((video) => ({
-    videoId: video.id,
-    title: video.snippet.title,
-    thumbnail: video.snippet.thumbnails.medium.url,
-    views: `${Number(video.statistics.viewCount).toLocaleString()} views`,
-    duration: formatDurationFn(video.contentDetails.duration),
-  }))
-
-  return videos
-}
-
-export async function fetchChannelStats(API_KEY: string, CHANNEL_ID: string) {
-  const channelRes = await fetch(
-    `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`
-  )
-  const channelData: {
-    items: Array<{
-      statistics: {
-        subscriberCount: string
-        viewCount: string
-      }
-    }>
-  } = await channelRes.json()
-
-  const stats = channelData.items[0].statistics
-
-  return {
-    subscriberCount: Number(stats.subscriberCount),
-    viewCount: Number(stats.viewCount),
+  const cacheKey = `${CHANNEL_ID}-${page}-${pageSize}`
+  if (videoCache.has(cacheKey)) {
+    return videoCache.get(cacheKey)
   }
-}
 
-export async function fetchPopularVideos(
-  API_KEY: string,
-  channelId: string,
-  maxResults = 5,
-  formatDurationFn: (isoDuration: string) => string
-) {
-  try {
-    const channelRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/channels?key=${API_KEY}&id=${channelId}&part=contentDetails`
+  const fetchVideoData = async () => {
+    const searchRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${pageSize}&pageToken=${page > 1 ? `&pageToken=${page}` : ''}&type=video`
     )
-    const channelData: {
-      items: Array<{
-        contentDetails: {
-          relatedPlaylists: {
-            uploads: string
-          }
-        }
-      }>
-    } = await channelRes.json()
-
-    if (!channelData.items || channelData.items.length === 0) {
-      throw new Error("Channel not found")
+    
+    if (!searchRes.ok) {
+      throw new Error(`Failed to fetch videos: ${searchRes.statusText}`)
     }
-
-    const uploadsPlaylistId = channelData.items[0].contentDetails.relatedPlaylists.uploads
-
-    const playlistRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/playlistItems?key=${API_KEY}&playlistId=${uploadsPlaylistId}&part=snippet&maxResults=${maxResults}`
-    )
-    const playlistData: {
-      items: Array<{
-        snippet: YouTubeVideoSnippet & { resourceId: { videoId: string } }
-      }>
-    } = await playlistRes.json()
-
-    if (!playlistData.items || playlistData.items.length === 0) {
-      throw new Error("No videos found in channel")
-    }
-
-    const videoIds = playlistData.items
-      .map((item) => item.snippet.resourceId.videoId)
-      .join(",")
+    
+    const searchData = await searchRes.json()
+    const videoIds = searchData.items.map((item: any) => item.id.videoId).join(",")
 
     const videosRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds}&part=snippet,contentDetails,statistics`
+      `https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${videoIds}&part=contentDetails,statistics,snippet`
     )
-    const videosData: { items: YouTubeVideoItem[] } = await videosRes.json()
+    
+    if (!videosRes.ok) {
+      throw new Error(`Failed to fetch video details: ${videosRes.statusText}`)
+    }
+    
+    const videosData = await videosRes.json()
 
-    const sortedVideos = videosData.items.sort((a, b) => {
-      return (
-        parseInt(b.statistics.viewCount) - parseInt(a.statistics.viewCount)
-      )
-    })
-
-    const videos = sortedVideos.map((video) => ({
+    const videos = videosData.items.map((video: any) => ({
       videoId: video.id,
       title: video.snippet.title,
       thumbnail: video.snippet.thumbnails.medium.url,
@@ -193,9 +189,65 @@ export async function fetchPopularVideos(
       duration: formatDurationFn(video.contentDetails.duration),
     }))
 
-    return videos.slice(0, maxResults)
-  } catch (error) {
-    console.error("Error fetching popular videos:", error)
-    throw error
+    return {
+      videos,
+      nextPageToken: searchData.nextPageToken,
+      totalResults: searchData.pageInfo.totalResults,
+    }
   }
+
+  const result = await fetchWithRetry(fetchVideoData)
+  videoCache.set(cacheKey, result)
+  
+  // Cache invalidation after 5 minutes
+  setTimeout(() => videoCache.delete(cacheKey), 5 * 60 * 1000)
+  
+  return result
+}
+
+export async function fetchChannelStats(API_KEY: string, CHANNEL_ID: string) {
+  const cacheKey = CHANNEL_ID
+  if (statsCache.has(cacheKey)) {
+    return statsCache.get(cacheKey)
+  }
+
+  const fetchStats = async () => {
+    const channelRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`
+    )
+    
+    if (!channelRes.ok) {
+      throw new Error(`Failed to fetch channel stats: ${channelRes.statusText}`)
+    }
+    
+    const channelData = await channelRes.json()
+    const stats = channelData.items[0].statistics
+
+    return {
+      subscriberCount: Number(stats.subscriberCount),
+      viewCount: Number(stats.viewCount),
+    }
+  }
+
+  const result = await fetchWithRetry(fetchStats)
+  statsCache.set(cacheKey, result)
+  
+  // Cache invalidation after 5 minutes
+  setTimeout(() => statsCache.delete(cacheKey), 5 * 60 * 1000)
+  
+  return result
+}
+
+// Intersection Observer hook with options
+export function useIntersectionObserver(
+  options: IntersectionObserverInit = {}
+) {
+  const [ref, inView] = useInView({
+    threshold: options.threshold || 0,
+    root: options.root || null,
+    rootMargin: options.rootMargin || "0px",
+    triggerOnce: true,
+  })
+
+  return { ref, inView }
 }
