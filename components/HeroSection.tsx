@@ -70,8 +70,7 @@ export function HeroSection({ darkMode, isVisible, subscriberCount, videoCount, 
               </Button>
               <Button
                 size="lg"
-                variant="outline"
-                className={`${darkMode ? "border-gray-700 text-gray-300 hover:bg-gray-800" : "border-gray-300 text-gray-700 hover:bg-gray-50"}`}
+                className={`${darkMode ? "border-gray-700 hover:text-white hover:bg-gray-800" : "border-gray-300 text-gray-700 hover:bg-gray-50"}`}
               >
                 Explore Channel
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -111,7 +110,7 @@ function HeroVideoPreview({ darkMode, isVisible, latestVideo, }: { darkMode: boo
           />
         </div>
         <div className="space-y-3">
-          <h3 className="text-xl font-semibold">Latest: iPhone 12 Mini Review</h3>
+          <h3 className="text-xl font-semibold">{latestVideo.title}</h3>
           <p className={darkMode ? "text-gray-300" : "text-gray-600"}>
               {latestVideo.description || "Check out the latest video from Technical Ranch!"}
           </p>

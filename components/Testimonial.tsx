@@ -16,27 +16,27 @@ export function TestimonialsSection({ darkMode }: TestimonialsSectionProps) {
     {
       name: "TechLover2024",
       comment: "Best honest reviews on YouTube! Akash never disappoints with his detailed analysis.",
-      avatar: "/placeholder.svg?height=40&width=40",
+        avatar: "https://i.pravatar.cc/40?u=techlover2024",
     },
     {
       name: "GadgetGuru",
       comment: "I always wait for Technical Ranch videos before buying any new gadget. Trustworthy!",
-      avatar: "/placeholder.svg?height=40&width=40",
+     avatar: "https://i.pravatar.cc/40?u=gadgetguru",
     },
     {
       name: "SmartBuyer",
       comment: "Clear, concise, and super informative. Highly recommend this channel to all tech enthusiasts.",
-      avatar: "/placeholder.svg?height=40&width=40",
+      avatar: "https://i.pravatar.cc/40?u=smartbuyer",
     },
     {
       name: "TechFan88",
       comment: "Akash's videos helped me choose the perfect laptop. Thanks for the amazing insights!",
-      avatar: "/placeholder.svg?height=40&width=40",
+      avatar: "https://i.pravatar.cc/40?u=techfan88",
     },
     {
       name: "GizmoGeek",
       comment: "Fantastic content and always up-to-date with the latest tech trends!",
-      avatar: "/placeholder.svg?height=40&width=40",
+      avatar: "https://i.pravatar.cc/40?u=gizmogeek",
     },
     // Add more if needed
   ]

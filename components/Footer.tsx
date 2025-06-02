@@ -1,6 +1,7 @@
 import Link from "next/link"
-import { ArrowUp, Youtube, Instagram, Twitter, Linkedin } from "lucide-react"
+import { ArrowUp, Youtube, Instagram, Twitter, Facebook } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
 
 interface FooterProps {
   darkMode: boolean
@@ -14,13 +15,13 @@ export function Footer({ darkMode, scrollToTop }: FooterProps) {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div className="md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
-                  darkMode ? "bg-white text-gray-900" : "bg-gray-900 text-white"
-                }`}
-              >
-                TR
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Technical Ranch Logo"
+                width={32}
+                height={32}
+                className="rounded-full"
+              />
               <span className="text-lg font-semibold">Technical Ranch</span>
             </div>
             <p className={`max-w-md ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
@@ -33,25 +34,22 @@ export function Footer({ darkMode, scrollToTop }: FooterProps) {
             <div className="space-y-2">
               <Link
                 href="#about"
-                className={`block transition-colors ${
-                  darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                }`}
+                className={`block transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                  }`}
               >
                 About
               </Link>
               <Link
                 href="#videos"
-                className={`block transition-colors ${
-                  darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                }`}
+                className={`block transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                  }`}
               >
                 Videos
               </Link>
               <Link
                 href="#contact"
-                className={`block transition-colors ${
-                  darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                }`}
+                className={`block transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                  }`}
               >
                 Contact
               </Link>
@@ -63,44 +61,39 @@ export function Footer({ darkMode, scrollToTop }: FooterProps) {
             <div className="flex space-x-4">
               <Link
                 href="#"
-                className={`transition-colors ${
-                  darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                }`}
+                className={`transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                  }`}
               >
                 <Youtube className="w-5 h-5" />
               </Link>
               <Link
-                href="#"
-                className={`transition-colors ${
-                  darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                }`}
+                href="https://www.instagram.com/akash.halder.5"
+                className={`transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                  }`}
               >
                 <Instagram className="w-5 h-5" />
               </Link>
               <Link
-                href="#"
-                className={`transition-colors ${
-                  darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                }`}
+                href="https://x.com/AkashHalder1623"
+                className={`transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                  }`}
               >
                 <Twitter className="w-5 h-5" />
               </Link>
               <Link
-                href="#"
-                className={`transition-colors ${
-                  darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                }`}
+                href="https://www.facebook.com/Akash345hal"
+                className={`transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                  }`}
               >
-                <Linkedin className="w-5 h-5" />
+                <Facebook className="w-5 h-5" />
               </Link>
             </div>
           </div>
         </div>
 
         <div
-          className={`flex flex-col md:flex-row justify-between items-center pt-8 border-t ${
-            darkMode ? "border-gray-800" : "border-gray-200"
-          }`}
+          className={`flex flex-col md:flex-row justify-between items-center pt-8 border-t ${darkMode ? "border-gray-800" : "border-gray-200"
+            }`}
         >
           <div className={`text-sm mb-4 md:mb-0 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
             © 2024 Technical Ranch. All rights reserved.

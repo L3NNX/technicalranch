@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge"
+import Image from "next/image"
 
 interface AboutSectionProps {
   darkMode: boolean
@@ -57,12 +58,19 @@ function CreatorProfile({ darkMode }: { darkMode: boolean }) {
         <div
           className={`aspect-square rounded-xl flex items-center justify-center mb-6 ${darkMode ? "bg-gray-700" : "bg-gray-200"}`}
         >
-          <div
-            className={`w-32 h-32 rounded-full flex items-center justify-center text-4xl font-bold ${
-              darkMode ? "bg-white text-gray-900" : "bg-gray-900 text-white"
+          
+            <div
+            className={`w-32 h-32 rounded-full overflow-hidden ${
+              darkMode ? "bg-white invert" : "bg-gray-900"
             }`}
           >
-            AH
+            <Image
+              src="/logo.png"
+              alt="Technical Ranch Logo"
+              width={128}
+              height={128}
+              className="object-cover w-full h-full"
+            />
           </div>
         </div>
         <div className="text-center space-y-2">

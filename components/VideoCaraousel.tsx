@@ -47,7 +47,7 @@ export function VideoCarousel({
         <div className="relative">
           <div className="flex items-center justify-between mb-8">
             <Button
-              variant="outline"
+
               size="icon"
               onClick={prevVideo}
               className={darkMode ? "border-gray-700 hover:bg-gray-800" : "border-gray-300 hover:bg-gray-50"}
@@ -55,7 +55,7 @@ export function VideoCarousel({
               <ChevronLeft className="w-4 h-4" />
             </Button>
             <Button
-              variant="outline"
+
               size="icon"
               onClick={nextVideo}
               className={darkMode ? "border-gray-700 hover:bg-gray-800" : "border-gray-300 hover:bg-gray-50"}

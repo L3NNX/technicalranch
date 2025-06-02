@@ -8,11 +8,10 @@ import { FeaturesSection } from "@/components/FeatureSection"
 import { VideoCarousel } from "@/components/VideoCaraousel"
 import { StatsSection } from "@/components/StatsSection"
 import { TestimonialsSection } from "@/components/Testimonial"
-import { NewsletterSection } from "@/components/NewsLetterSignup"
 import { AboutSection } from "@/components/AboutSection"
 import { CTASection } from "@/components/CTASection"
 import { Footer } from "@/components/Footer"
-import { StickyButtons } from "@/components/StickyButton"
+
 
 // Import helper utils
 import {
@@ -26,7 +25,6 @@ export default function TechnicalRanchLanding() {
   const [isVisible, setIsVisible] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
-  const [email, setEmail] = useState("")
   const [showScrollTop, setShowScrollTop] = useState(false)
   const carouselRef = useRef<HTMLDivElement>(null)
 
@@ -110,13 +108,6 @@ export default function TechnicalRanchLanding() {
     setCurrentVideoIndex((prev) => (prev - 1 + featuredVideos.length) % featuredVideos.length)
   }
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Newsletter signup:", email)
-    setEmail("")
-    alert("Thanks for subscribing!")
-  }
-
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
@@ -155,24 +146,12 @@ export default function TechnicalRanchLanding() {
 
       <TestimonialsSection darkMode={darkMode} />
 
-      <NewsletterSection
-        darkMode={darkMode}
-        email={email}
-        setEmail={setEmail}
-        handleNewsletterSubmit={handleNewsletterSubmit}
-      />
-
+     
       <AboutSection darkMode={darkMode} videoCount={videoCount} />
 
       <CTASection darkMode={darkMode} />
 
       <Footer darkMode={darkMode} scrollToTop={scrollToTop} />
-
-      <StickyButtons
-        darkMode={darkMode}
-        showScrollTop={showScrollTop}
-        scrollToTop={scrollToTop}
-      />
     </div>
   )
 }

@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
+import { MotionProvider } from "../components/MotionProvider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -18,7 +19,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={inter.className}>{children}</body>
+      <head>
+        <link
+          rel="preconnect"
+          href="https://www.googleapis.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://img.youtube.com"
+          crossOrigin="anonymous"
+        />
+      </head>
+      <body className={inter.className}>
+        <MotionProvider>{children}</MotionProvider>
+      </body>
     </html>
   )
 }

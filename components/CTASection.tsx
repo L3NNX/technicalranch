@@ -27,9 +27,8 @@ export function CTASection({ darkMode }: CTASectionProps) {
             </Button>
             <Button
               size="lg"
-              variant="outline"
               className={`${
-                darkMode ? "border-gray-700 text-gray-300 hover:bg-gray-800" : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                darkMode ? "border-gray-700 hover:text-gray-300 hover:bg-gray-800" : "border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
             >
               Watch Latest Videos
