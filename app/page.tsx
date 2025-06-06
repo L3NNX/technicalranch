@@ -25,7 +25,7 @@ export default function TechnicalRanchLanding() {
   const [isVisible, setIsVisible] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
-  const [showScrollTop, setShowScrollTop] = useState(false)
+  // Removed unused showScrollTop state
   const carouselRef = useRef<HTMLDivElement>(null)
 
   // Animated counters
@@ -45,13 +45,8 @@ export default function TechnicalRanchLanding() {
       animateCounter(250000, setViewCount)
     }, 500)
 
-    // Scroll listener for back to top button
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400)
-    }
-    window.addEventListener("scroll", handleScroll)
-
-    return () => window.removeEventListener("scroll", handleScroll)
+    // Scroll listener for back to top button (removed showScrollTop logic)
+    // You can add other scroll-related logic here if needed
   }, [])
 
   const [featuredVideos, setFeaturedVideos] = useState<

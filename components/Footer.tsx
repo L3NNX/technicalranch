@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowUp, Youtube, Instagram, Twitter, Facebook } from "lucide-react"
+import { ArrowUp, Instagram, Twitter, Facebook } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 
