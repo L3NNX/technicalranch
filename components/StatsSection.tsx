@@ -149,7 +149,8 @@ export function StatsSection({
     return (
       <div className={cn(
         "px-6 lg:px-12 py-20 text-center",
-        darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
+        // darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
+        darkMode ? "bg-gray-800/50" : "bg-transparent"
       )}>
         <p className="text-red-500">Error loading statistics: {error}</p>
       </div>
@@ -160,7 +161,8 @@ export function StatsSection({
     return (
       <div className={cn(
         "px-6 lg:px-12 py-20",
-        darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
+        // darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
+        darkMode ? "bg-gray-800/50" : "bg-transparent"
       )}>
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
@@ -195,7 +197,8 @@ export function StatsSection({
       ref={ref}
       className={cn(
         "px-6 lg:px-12 py-20 relative overflow-hidden",
-        darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
+        darkMode ? "bg-gray-800/50" : "bg-transparent"
+        // darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
       )}
     >
       <div className="max-w-6xl mx-auto relative z-10">

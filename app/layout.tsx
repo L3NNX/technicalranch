@@ -30,8 +30,10 @@ export default function RootLayout({
           href="https://img.youtube.com"
           crossOrigin="anonymous"
         />
+         <meta name="theme-color" content="#000000" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
-      <body className={inter.className}>
+         <body className={`${inter.className} antialiased`}>
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>

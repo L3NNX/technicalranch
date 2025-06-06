@@ -8,7 +8,7 @@ interface CTASectionProps {
 
 export function CTASection({ darkMode }: CTASectionProps) {
   return (
-    <section className={`px-6 lg:px-12 py-20 ${darkMode ? "bg-gray-800" : "bg-gray-50"}`}>
+    <section className={`px-6 lg:px-12 py-20 ${darkMode ? "bg-gray-800" : "bg-transparent"}`}>
       <div className="max-w-4xl mx-auto text-center">
         <div
           className={`rounded-2xl p-12 border ${darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"}`}
@@ -28,7 +28,7 @@ export function CTASection({ darkMode }: CTASectionProps) {
             <Button
               size="lg"
               className={`${
-                darkMode ? "border-gray-700 hover:text-gray-300 hover:bg-gray-800" : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                darkMode ? "border-gray-700 hover:text-gray-300 hover:bg-gray-800" : "border-gray-300 text-gray-700 hover:bg-transparent"
               }`}
             >
               Watch Latest Videos

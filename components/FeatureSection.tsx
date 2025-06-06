@@ -72,7 +72,7 @@ export function FeaturesSection({ darkMode }: FeaturesSectionProps) {
       ref={ref}
       className={cn(
         "px-6 lg:px-12 py-20",
-        darkMode ? "bg-gray-800/50" : "bg-gray-50"
+        darkMode ? "bg-gray-800/50" : "bg-transparent"
       )}
     >
       <div className="max-w-6xl mx-auto">
@@ -103,7 +103,7 @@ export function FeaturesSection({ darkMode }: FeaturesSectionProps) {
               key={index}
               className={cn(
                 "border transition-all duration-500 transform",
-                darkMode ? "bg-gray-900/50 border-gray-700 hover:bg-gray-900/80" : "bg-white border-gray-200 hover:bg-gray-50",
+                darkMode ? "bg-gray-900/50 border-gray-700 hover:bg-gray-900/80" : "bg-white border-gray-200 hover:bg-transparent",
                 inView ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0",
               )}
               style={{ 

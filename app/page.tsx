@@ -110,12 +110,14 @@ export default function TechnicalRanchLanding() {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 ${
+      className={`min-h-screen transition-colors duration-300 relative z-10 ${
         darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
       }`}
     >
-      <AnimatedBackground darkMode={darkMode} />
 
+      
+      <AnimatedBackground darkMode={darkMode} />  
+ <div className="relative z-20">
       <Navigation darkMode={darkMode} setDarkMode={setDarkMode} />
 
       <HeroSection
@@ -152,6 +154,7 @@ export default function TechnicalRanchLanding() {
       <CTASection darkMode={darkMode} />
 
       <Footer darkMode={darkMode} scrollToTop={scrollToTop} />
+      </div>
     </div>
   )
 }

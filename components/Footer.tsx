@@ -60,13 +60,6 @@ export function Footer({ darkMode, scrollToTop }: FooterProps) {
             <h3 className="font-semibold mb-4">Follow Us</h3>
             <div className="flex space-x-4">
               <Link
-                href="#"
-                className={`transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  }`}
-              >
-                <Youtube className="w-5 h-5" />
-              </Link>
-              <Link
                 href="https://www.instagram.com/akash.halder.5"
                 className={`transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
                   }`}
