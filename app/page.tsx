@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { AnimatedBackground } from "@/components/AnimatedBackground"
 import { Navigation } from "@/components/Navigation"
 import { HeroSection } from "@/components/HeroSection"
 import { FeaturesSection } from "@/components/FeatureSection"
@@ -12,69 +11,43 @@ import { AboutSection } from "@/components/AboutSection"
 import { CTASection } from "@/components/CTASection"
 import { Footer } from "@/components/Footer"
 
-
-// Import helper utils
-import {
-  formatDuration,
-  animateCounter,
-  fetchVideos,
-  fetchChannelStats,
-} from "@/lib/utils" // adjust path if needed
+import { formatDuration, fetchVideos, fetchChannelStats } from "@/lib/utils"
 
 export default function TechnicalRanchLanding() {
   const [isVisible, setIsVisible] = useState(false)
-  const [darkMode, setDarkMode] = useState(false)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
-  // Removed unused showScrollTop state
   const carouselRef = useRef<HTMLDivElement>(null)
 
-  // Animated counters
   const [subscriberCount, setSubscriberCount] = useState(0)
   const [videoCount, setVideoCount] = useState(0)
   const [viewCount, setViewCount] = useState(0)
 
-  const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY
+  const API_KEY    = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY
   const CHANNEL_ID = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID
+
+  const [featuredVideos, setFeaturedVideos] = useState<
+    { videoId: string; title: string; thumbnail: string; views: string; duration: string }[]
+  >([])
+
+  const latestVideo =
+    featuredVideos.length > 0
+      ? {
+          videoId:     featuredVideos[0].videoId,
+          title:       featuredVideos[0].title,
+          description: featuredVideos[0].title,
+          views:       featuredVideos[0].views,
+          duration:    featuredVideos[0].duration,
+        }
+      : null
 
   useEffect(() => {
     setIsVisible(true)
-
-    setTimeout(() => {
-      animateCounter(1020, setSubscriberCount)
-      animateCounter(183, setVideoCount)
-      animateCounter(250000, setViewCount)
-    }, 500)
-
-    // Scroll listener for back to top button (removed showScrollTop logic)
-    // You can add other scroll-related logic here if needed
   }, [])
 
-  const [featuredVideos, setFeaturedVideos] = useState<
-    {
-      videoId: string
-      title: string
-      thumbnail: string
-      views: string
-      duration: string
-    }[]
-  >([])
-
-  const latestVideo = featuredVideos.length > 0 ? {
-  videoId: featuredVideos[0].videoId,
-  title: featuredVideos[0].title,
-  description: featuredVideos[0].title, 
-  views: featuredVideos[0].views,
-  duration: featuredVideos[0].duration,
-} : null
-
-
   useEffect(() => {
-    if (!API_KEY || !CHANNEL_ID) {
-      console.error("Missing YouTube API key or Channel ID")
-      return
-    }
+    if (!API_KEY || !CHANNEL_ID) return
 
-    const loadVideos = async () => {
+    const load = async () => {
       try {
         const videos = await fetchVideos(API_KEY, CHANNEL_ID, formatDuration)
         setFeaturedVideos(videos)
@@ -83,50 +56,37 @@ export default function TechnicalRanchLanding() {
         const stats = await fetchChannelStats(API_KEY, CHANNEL_ID)
         setSubscriberCount(stats.subscriberCount)
         setViewCount(stats.viewCount)
-      } catch (error) {
-        console.error("Failed to fetch videos or stats", error)
+      } catch (e) {
+        console.error("Failed to load YouTube data", e)
       }
     }
 
-    loadVideos()
+    load()
   }, [API_KEY, CHANNEL_ID])
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
 
-  const nextVideo = () => {
-    setCurrentVideoIndex((prev) => (prev + 1) % featuredVideos.length)
-  }
+  const nextVideo = () =>
+    setCurrentVideoIndex((p) => (p + 1) % featuredVideos.length)
 
-  const prevVideo = () => {
-    setCurrentVideoIndex((prev) => (prev - 1 + featuredVideos.length) % featuredVideos.length)
-  }
+  const prevVideo = () =>
+    setCurrentVideoIndex((p) => (p - 1 + featuredVideos.length) % featuredVideos.length)
 
   return (
-    <div
-      className={`min-h-screen transition-colors duration-300 relative z-10 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-      }`}
-    >
-
-      
-      <AnimatedBackground darkMode={darkMode} />  
- <div className="relative z-20">
-      <Navigation darkMode={darkMode} setDarkMode={setDarkMode} />
+    <div style={{ background: "var(--cp-bg)", minHeight: "100vh" }}>
+      <Navigation />
 
       <HeroSection
-        darkMode={darkMode}
         isVisible={isVisible}
         subscriberCount={subscriberCount}
         videoCount={videoCount}
+        viewCount={viewCount}
         latestVideo={latestVideo}
       />
 
-      <FeaturesSection darkMode={darkMode} />
+      <FeaturesSection />
 
       <VideoCarousel
-        darkMode={darkMode}
         featuredVideos={featuredVideos}
         currentVideoIndex={currentVideoIndex}
         prevVideo={prevVideo}
@@ -135,21 +95,18 @@ export default function TechnicalRanchLanding() {
       />
 
       <StatsSection
-        darkMode={darkMode}
         subscriberCount={subscriberCount}
         videoCount={videoCount}
         viewCount={viewCount}
       />
 
-      <TestimonialsSection darkMode={darkMode} />
+      <TestimonialsSection />
 
-     
-      <AboutSection darkMode={darkMode} videoCount={videoCount} />
+      <AboutSection videoCount={videoCount} />
 
-      <CTASection darkMode={darkMode} />
+      <CTASection />
 
-      <Footer darkMode={darkMode} scrollToTop={scrollToTop} />
-      </div>
+      <Footer scrollToTop={scrollToTop} />
     </div>
   )
 }

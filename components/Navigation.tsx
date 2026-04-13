@@ -1,261 +1,144 @@
-// import Link from "next/link"
-// import { Button } from "@/components/ui/button"
-// import { Moon, Sun, Youtube } from "lucide-react"
-// import Image from "next/image"
+"use client"
 
-// interface NavigationProps {
-//   darkMode: boolean
-//   setDarkMode: (mode: boolean) => void
-// }
-
-// export function Navigation({ darkMode, setDarkMode }: NavigationProps) {
-//   return (
-//     <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4">
-//       <nav
-//         className={`flex items-center justify-between px-8 py-4 rounded-full shadow-lg backdrop-blur-md transition-all duration-300 w-full ${
-//           darkMode 
-//             ? "bg-gray-900/80 border border-gray-700/50" 
-//             : "bg-white/80 border border-gray-200/50"
-//         }`}
-//       >
-//         {/* Logo Section */}
-//         <div className="flex items-center space-x-3 min-w-fit">
-//           <Image
-//             src="/logo.png"
-//             alt="Technical Ranch Logo"
-//             width={32}
-//             height={32}
-//             className="rounded-full flex-shrink-0"
-//           />
-//           <span className={`text-lg font-semibold whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}>
-//             Technical Ranch
-//           </span>
-//         </div>
-
-//         {/* Navigation Links */}
-//         <div className="hidden lg:flex items-center space-x-8 flex-1 justify-center">
-//           <Link
-//             href="#about"
-//             className={`px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap ${
-//               darkMode 
-//                 ? "text-gray-300 hover:text-white hover:bg-gray-800/50" 
-//                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/50"
-//             }`}
-//           >
-//             About
-//           </Link>
-//           <Link
-//             href="#videos"
-//             className={`px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap ${
-//               darkMode 
-//                 ? "text-gray-300 hover:text-white hover:bg-gray-800/50" 
-//                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/50"
-//             }`}
-//           >
-//             Videos
-//           </Link>
-//           <Link
-//             href="#contact"
-//             className={`px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap ${
-//               darkMode 
-//                 ? "text-gray-300 hover:text-white hover:bg-gray-800/50" 
-//                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/50"
-//             }`}
-//           >
-//             Contact
-//           </Link>
-//         </div>
-
-//         {/* Action Buttons */}
-//         <div className="flex items-center space-x-3 min-w-fit">
-//           <Button
-//             variant="ghost"
-//             size="icon"
-//             onClick={() => setDarkMode(!darkMode)}
-//             className={`rounded-full transition-all duration-200 ${
-//               darkMode 
-//                 ? "hover:bg-gray-800/50 text-gray-300 hover:text-white" 
-//                 : "hover:bg-gray-100/50 text-gray-600 hover:text-gray-900"
-//             }`}
-//           >
-//             {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-//           </Button>
-//           <Button 
-//             asChild 
-//             className="bg-red-600 hover:bg-red-700 text-white rounded-full px-4 py-2 shadow-md transition-all duration-200 hover:shadow-lg whitespace-nowrap"
-//           >
-//             <Link href="https://www.youtube.com/@technicalranch1623?sub_confirmation=1" target="_blank">
-//               <Youtube className="w-4 h-4 mr-2" />
-//               <span className="hidden sm:inline">Subscribe</span>
-//               <span className="sm:hidden">Sub</span>
-//             </Link>
-//           </Button>
-
-//           {/* Mobile Menu Button */}
-//           <div className="lg:hidden">
-//             <Button
-//               variant="ghost"
-//               size="icon"
-//               className={`rounded-full ${
-//                 darkMode 
-//                   ? "hover:bg-gray-800/50 text-gray-300" 
-//                   : "hover:bg-gray-100/50 text-gray-600"
-//               }`}
-//             >
-//               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-//               </svg>
-//             </Button>
-//           </div>
-//         </div>
-//       </nav>
-//     </div>
-//   )
-// }
-
-
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Moon, Sun, Youtube } from "lucide-react"
 import Image from "next/image"
-import { useState } from "react"
+import { Youtube, Menu, X } from "lucide-react"
 
-interface NavigationProps {
-  darkMode: boolean
-  setDarkMode: (mode: boolean) => void
-}
+export function Navigation() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
-export function Navigation({ darkMode, setDarkMode }: NavigationProps) {
-   const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  const links = [
+    { href: "#videos",   label: "Videos"   },
+    { href: "#features", label: "Features" },
+    { href: "#stats",    label: "Stats"    },
+    { href: "#about",    label: "About"    },
+  ]
+
   return (
-    <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4 mb-24">
-      <nav
-        className={`flex items-center justify-between px-6 py-2.5 rounded-full shadow-lg backdrop-blur-md transition-all duration-300 w-full ${
-          darkMode 
-            ? "bg-gray-900/80 border border-gray-700/50" 
-            : "bg-white/80 border border-gray-200/50"
-        }`}
+    <>
+      <header
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        style={{
+          background: scrolled ? "rgba(17,17,17,0.95)" : "transparent",
+          borderBottom: scrolled ? "1px solid var(--cp-border)" : "1px solid transparent",
+          backdropFilter: scrolled ? "blur(12px)" : "none",
+        }}
       >
-        {/* Logo Section */}
-        <div className="flex items-center space-x-2.5 min-w-fit">
-          <Image
-            src="/logo.png"
-            alt="Technical Ranch Logo"
-            width={28}
-            height={28}
-            className="rounded-full flex-shrink-0"
-          />
-          <span className={`text-base font-semibold whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}>
-            Technical Ranch
-          </span>
-        </div>
+        <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 
-        {/* Navigation Links */}
-        <div className="hidden lg:flex items-center space-x-6 flex-1 justify-center">
-          <Link
-            href="#about"
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap text-sm ${
-              darkMode 
-                ? "text-gray-300 hover:text-white hover:bg-gray-800/50" 
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/50"
-            }`}
-          >
-            About
-          </Link>
-          <Link
-            href="#videos"
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap text-sm ${
-              darkMode 
-                ? "text-gray-300 hover:text-white hover:bg-gray-800/50" 
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/50"
-            }`}
-          >
-            Videos
-          </Link>
-          <Link
-            href="#contact"
-            className={`px-3 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap text-sm ${
-              darkMode 
-                ? "text-gray-300 hover:text-white hover:bg-gray-800/50" 
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/50"
-            }`}
-          >
-            Contact
-          </Link>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center space-x-2.5 min-w-fit">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setDarkMode(!darkMode)}
-            className={`rounded-full transition-all duration-200 h-8 w-8 ${
-              darkMode 
-                ? "hover:bg-gray-800/50 text-gray-300 hover:text-white" 
-                : "hover:bg-gray-100/50 text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            {darkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-          </Button>
-          <Button 
-            asChild 
-            className="bg-red-600 hover:bg-red-700 text-white rounded-full px-3 py-1.5 shadow-md transition-all duration-200 hover:shadow-lg whitespace-nowrap text-sm h-8"
-          >
-            <Link href="https://www.youtube.com/@technicalranch1623?sub_confirmation=1" target="_blank">
-              <Youtube className="w-3.5 h-3.5 mr-1.5" />
-              <span className="hidden sm:inline">Subscribe</span>
-              <span className="sm:hidden">Sub</span>
-            </Link>
-          </Button>
-
-          {/* Mobile Menu Button */}
-          <div className="lg:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-               onClick={() => setMenuOpen((open) => !open)}
-              className={`rounded-full h-8 w-8 ${
-                darkMode 
-                  ? "hover:bg-gray-800/50 text-gray-300" 
-                  : "hover:bg-gray-100/50 text-gray-600"
-              }`}
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <div
+              className="w-8 h-8 rounded-full overflow-hidden ring-1 transition-all duration-200"
+              style={{ ringColor: "var(--cp-border2)" }}
             >
-              <svg className={`w-4 h-4 ${darkMode ? "stroke-gray-300" : "stroke-gray-900"}`} stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </Button>
-          </div>
-        </div>
-      </nav>
+              <Image
+                src="/logo.png"
+                alt="Technical Ranch"
+                width={32}
+                height={32}
+                className="object-cover w-full h-full"
+              />
+            </div>
+            <span
+              className="font-semibold text-sm tracking-wide"
+              style={{ color: "var(--cp-text)", fontFamily: "var(--font-body)" }}
+            >
+              Technical Ranch
+            </span>
+            {/* Red accent dot */}
+            <span
+              className="w-1.5 h-1.5 rounded-full"
+              style={{ background: "var(--cp-red)" }}
+            />
+          </Link>
 
-         {menuOpen && (
-        <div
-          className={`mt-2 px-6 py-4 rounded-xl shadow-lg backdrop-blur-md transition-all duration-300 lg:hidden ${
-            darkMode
-              ? "bg-gray-900/90 border border-gray-700/50 text-white"
-              : "bg-white/90 border border-gray-200/50 text-gray-900"
-          }`}
-        >
-          <div className="flex flex-col space-y-4 text-sm">
-            {["about", "videos", "contact"].map((id) => (
+          {/* Desktop links */}
+          <div className="hidden lg:flex items-center gap-1">
+            {links.map((link) => (
               <Link
-                key={id}
-                href={`#${id}`}
-                onClick={() => setMenuOpen(false)}
-                className={`px-4 py-2 rounded-md transition-all ${
-                  darkMode 
-                    ? "hover:bg-gray-800/50" 
-                    : "hover:bg-gray-100/60"
-                }`}
+                key={link.href}
+                href={link.href}
+                className="px-4 py-2 rounded text-sm font-medium transition-all duration-150"
+                style={{ color: "var(--cp-muted)" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--cp-text)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "var(--cp-muted)")}
               >
-                {id.charAt(0).toUpperCase() + id.slice(1)}
+                {link.label}
               </Link>
             ))}
           </div>
+
+          {/* CTA */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="https://www.youtube.com/@technicalranch1623?sub_confirmation=1"
+              target="_blank"
+              className="cp-btn-primary hidden sm:inline-flex text-sm px-4 py-2"
+              style={{ borderRadius: "4px", fontSize: "13px", padding: "8px 16px" }}
+            >
+              <Youtube style={{ width: 15, height: 15 }} />
+              Subscribe
+            </Link>
+
+            {/* Mobile hamburger */}
+            <button
+              className="lg:hidden p-2 rounded transition-colors"
+              style={{ color: "var(--cp-muted)" }}
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label="Toggle menu"
+            >
+              {menuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div
+          className="fixed top-16 left-0 right-0 z-40 lg:hidden"
+          style={{
+            background: "rgba(17,17,17,0.98)",
+            borderBottom: "1px solid var(--cp-border)",
+            backdropFilter: "blur(12px)",
+          }}
+        >
+          <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-1">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className="px-4 py-3 rounded text-sm font-medium transition-colors"
+                style={{ color: "var(--cp-muted)" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--cp-text)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "var(--cp-muted)")}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link
+              href="https://www.youtube.com/@technicalranch1623?sub_confirmation=1"
+              target="_blank"
+              className="cp-btn-primary mt-2"
+              style={{ justifyContent: "center", fontSize: "13px", padding: "10px 16px" }}
+              onClick={() => setMenuOpen(false)}
+            >
+              <Youtube style={{ width: 15, height: 15 }} />
+              Subscribe on YouTube
+            </Link>
+          </div>
         </div>
       )}
-      
-    </div>
+    </>
   )
 }

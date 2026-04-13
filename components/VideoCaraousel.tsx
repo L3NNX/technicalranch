@@ -1,10 +1,11 @@
-import { ChevronLeft, ChevronRight, Play } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+"use client"
+
+import { ChevronLeft, ChevronRight, Play, Eye } from "lucide-react"
 import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react"
 
 interface Video {
+  videoId: string
   title: string
   views: string
   duration: string
@@ -12,114 +13,180 @@ interface Video {
 }
 
 interface VideoCarouselProps {
-  darkMode: boolean
   featuredVideos: Video[]
   currentVideoIndex: number
   prevVideo: () => void
   nextVideo: () => void
-   carouselRef: React.RefObject<HTMLDivElement | null>
+  carouselRef: React.RefObject<HTMLDivElement | null>
 }
 
 export function VideoCarousel({
-  darkMode,
   featuredVideos,
   currentVideoIndex,
   prevVideo,
   nextVideo,
   carouselRef,
 }: VideoCarouselProps) {
+  if (!featuredVideos.length) return null
+
+  const visibleCount = 3
+  const progress = featuredVideos.length > 0
+    ? ((currentVideoIndex + 1) / featuredVideos.length) * 100
+    : 0
+
   return (
-    <section id="videos" className="px-6 lg:px-12 py-20">
+    <section
+      id="videos"
+      className="px-6 lg:px-12 py-24"
+      style={{ background: "var(--cp-surface)" }}
+    >
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <Badge
-            variant="outline"
-            className={`${darkMode ? "border-gray-700 text-gray-300" : "border-gray-300 text-gray-600"} mb-4`}
-          >
-            Featured Content
-          </Badge>
-          <h2 className="text-4xl lg:text-5xl font-bold mb-6">Popular Videos</h2>
-          <p className={`text-xl max-w-2xl mx-auto ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-            Discover our most watched tech reviews and tutorials
-          </p>
-        </div>
 
-        <div className="relative">
-          <div className="flex items-center justify-between mb-8">
-            <Button
-
-              size="icon"
-              onClick={prevVideo}
-              className={darkMode ? "border-gray-700 hover:bg-gray-800" : "border-gray-300 hover:bg-gray-50"}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <Button
-
-              size="icon"
-              onClick={nextVideo}
-              className={darkMode ? "border-gray-700 hover:bg-gray-800" : "border-gray-300 hover:bg-gray-50"}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+        {/* Header row */}
+        <div className="flex items-end justify-between mb-12 gap-6 flex-wrap">
+          <div>
+            <div className="cp-badge cp-badge-neutral mb-4">Featured Content</div>
+            <h2 className="display-lg" style={{ color: "var(--cp-white)" }}>
+              POPULAR
+              <br />
+              <span style={{ color: "var(--cp-red)" }}>VIDEOS</span>
+            </h2>
           </div>
 
-          <div className="overflow-hidden" ref={carouselRef}>
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentVideoIndex * (100 / 3)}%)` }}
+          {/* Controls */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm" style={{ color: "var(--cp-muted)" }}>
+              {currentVideoIndex + 1} / {featuredVideos.length}
+            </span>
+            <button
+              onClick={prevVideo}
+              className="w-10 h-10 rounded flex items-center justify-center transition-all duration-150"
+              style={{
+                background: "var(--cp-surface2)",
+                border: "1px solid var(--cp-border2)",
+                color: "var(--cp-text)",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--cp-red)")}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--cp-border2)")}
             >
-              {featuredVideos.map((video, index) => (
-                <div 
-                  key={index} 
-                  className="flex-none w-full md:w-1/2 lg:w-1/3 px-3" // Added px-3 for consistent spacing
-                >
-                  <div className="h-full pb-6"> {/* Wrapper div for consistent spacing */}
-                    <Card
-                      className={`border hover:shadow-lg transition-all duration-300 group h-full flex flex-col ${
-                        darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-                      }`}
-                    >
-                      <CardContent className="p-0 flex flex-col flex-grow">
-                        <div
-                          className={`relative aspect-video rounded-t-lg overflow-hidden ${
-                            darkMode ? "bg-gray-700" : "bg-gray-100"
-                          }`}
-                        >
-                          <Image
-                            src={video.thumbnail || "/placeholder.svg"}
-                            alt={video.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
-                            {video.duration}
-                          </div>
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
-                            <Play className="w-12 h-12 text-white" />
-                          </div>
-                        </div>
-                        <div className="p-6 flex-grow">
-                          <h3
-                            className={`font-semibold text-lg mb-2 ${
-                              darkMode ? "text-white group-hover:text-gray-300" : "text-gray-900 group-hover:text-gray-600"
-                            } transition-colors duration-300`}
-                          >
-                            {video.title}
-                          </h3>
-                          <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-                            {video.views}
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-              ))}
-            </div>
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              onClick={nextVideo}
+              className="w-10 h-10 rounded flex items-center justify-center transition-all duration-150"
+              style={{
+                background: "var(--cp-surface2)",
+                border: "1px solid var(--cp-border2)",
+                color: "var(--cp-text)",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--cp-red)")}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--cp-border2)")}
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div
+          className="w-full h-px mb-8"
+          style={{ background: "var(--cp-border)" }}
+        >
+          <div
+            className="h-full transition-all duration-500"
+            style={{ width: `${progress}%`, background: "var(--cp-red)" }}
+          />
+        </div>
+
+        {/* Carousel */}
+        <div className="overflow-hidden" ref={carouselRef}>
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${currentVideoIndex * (100 / visibleCount)}%)` }}
+          >
+            {featuredVideos.map((video, i) => (
+              <div
+                key={i}
+                className="flex-none px-2"
+                style={{ width: `${100 / visibleCount}%` }}
+              >
+                <VideoCard video={video} />
+              </div>
+            ))}
           </div>
         </div>
       </div>
     </section>
+  )
+}
+
+function VideoCard({ video }: { video: Video }) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <a
+      href={`https://www.youtube.com/watch?v=${video.videoId}`}
+      target="_blank"
+      rel="noreferrer"
+      className="block"
+    >
+      <div
+        className="cp-card overflow-hidden"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          borderColor: hovered ? "var(--cp-border2)" : "var(--cp-border)",
+        }}
+      >
+        {/* Thumbnail */}
+        <div
+          className="relative overflow-hidden"
+          style={{ aspectRatio: "16/9", background: "var(--cp-surface2)" }}
+        >
+          <Image
+            src={video.thumbnail || "/placeholder.svg"}
+            alt={video.title}
+            fill
+            className="object-cover transition-transform duration-500"
+            style={{ transform: hovered ? "scale(1.05)" : "scale(1)" }}
+          />
+
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 flex items-center justify-center transition-opacity duration-300"
+            style={{ background: "rgba(0,0,0,0.45)", opacity: hovered ? 1 : 0 }}
+          >
+            <div
+              className="w-12 h-12 rounded-full flex items-center justify-center"
+              style={{ background: "var(--cp-red)" }}
+            >
+              <Play size={18} fill="white" color="white" className="ml-0.5" />
+            </div>
+          </div>
+
+          {/* Duration */}
+          <div
+            className="absolute bottom-2 right-2 rounded px-1.5 py-0.5"
+            style={{ background: "rgba(0,0,0,0.85)", color: "#fff", fontSize: "10px", fontWeight: 600 }}
+          >
+            {video.duration}
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="p-4" style={{ background: "var(--cp-surface)" }}>
+          <h3
+            className="text-sm font-semibold leading-snug line-clamp-2 mb-2"
+            style={{ color: hovered ? "var(--cp-white)" : "var(--cp-text)" }}
+          >
+            {video.title}
+          </h3>
+          <div className="flex items-center gap-1.5" style={{ color: "var(--cp-muted)" }}>
+            <Eye size={12} />
+            <span style={{ fontSize: "12px" }}>{video.views}</span>
+          </div>
+        </div>
+      </div>
+    </a>
   )
 }

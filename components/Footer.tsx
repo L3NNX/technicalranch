@@ -1,105 +1,143 @@
 import Link from "next/link"
-import { ArrowUp, Instagram, Twitter, Facebook } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import { ArrowUp, Instagram, Twitter, Facebook, Youtube } from "lucide-react"
 
 interface FooterProps {
-  darkMode: boolean
   scrollToTop: () => void
 }
 
-export function Footer({ darkMode, scrollToTop }: FooterProps) {
+export function Footer({ scrollToTop }: FooterProps) {
+  const links = ["About", "Videos", "Contact"]
+  const socials = [
+    { icon: Youtube,   href: "https://www.youtube.com/@technicalranch1623" },
+    { icon: Instagram, href: "https://www.instagram.com/akash.halder.5" },
+    { icon: Twitter,   href: "https://x.com/AkashHalder1623" },
+    { icon: Facebook,  href: "https://www.facebook.com/Akash345hal" },
+  ]
+
   return (
-    <footer className={`px-6 lg:px-12 py-12 border-t ${darkMode ? "border-gray-800" : "border-gray-200"}`}>
+    <footer
+      className="px-6 lg:px-12 pt-16 pb-8"
+      style={{
+        background: "var(--cp-bg)",
+        borderTop: "1px solid var(--cp-border)",
+      }}
+    >
+      <div className="cp-redline-full mb-12" />
+
       <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
-          <div className="md:col-span-2">
-            <div className="flex items-center space-x-3 mb-4">
+        <div className="grid md:grid-cols-4 gap-10 mb-12">
+
+          {/* Brand */}
+          <div className="md:col-span-2 space-y-4">
+            <div className="flex items-center gap-3">
               <Image
                 src="/logo.png"
-                alt="Technical Ranch Logo"
+                alt="Technical Ranch"
                 width={32}
                 height={32}
                 className="rounded-full"
               />
-              <span className="text-lg font-semibold">Technical Ranch</span>
+              <span
+                className="text-base font-semibold"
+                style={{ fontFamily: "var(--font-display)", letterSpacing: "0.04em", color: "var(--cp-text)" }}
+              >
+                TECHNICAL RANCH
+              </span>
             </div>
-            <p className={`max-w-md ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-              Your trusted source for honest tech reviews and tutorials. Join our community of tech enthusiasts!
+            <p className="text-sm leading-relaxed max-w-xs" style={{ color: "var(--cp-muted)" }}>
+              Your trusted source for honest tech reviews and tutorials.
+              Join a growing community of tech enthusiasts.
             </p>
+            <div className="flex gap-3">
+              {socials.map(({ icon: Icon, href }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  className="w-9 h-9 rounded flex items-center justify-center transition-all duration-150"
+                  style={{
+                    background: "var(--cp-surface)",
+                    border: "1px solid var(--cp-border)",
+                    color: "var(--cp-muted)",
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = "var(--cp-red)"
+                    e.currentTarget.style.color = "var(--cp-red)"
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = "var(--cp-border)"
+                    e.currentTarget.style.color = "var(--cp-muted)"
+                  }}
+                >
+                  <Icon size={15} />
+                </Link>
+              ))}
+            </div>
           </div>
 
+          {/* Quick links */}
           <div>
-            <h3 className="font-semibold mb-4">Quick Links</h3>
+            <h4
+              className="text-xs font-semibold tracking-widest mb-4"
+              style={{ color: "var(--cp-red)", textTransform: "uppercase" }}
+            >
+              Navigation
+            </h4>
             <div className="space-y-2">
-              <Link
-                href="#about"
-                className={`block transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  }`}
-              >
-                About
-              </Link>
-              <Link
-                href="#videos"
-                className={`block transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  }`}
-              >
-                Videos
-              </Link>
-              <Link
-                href="#contact"
-                className={`block transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  }`}
-              >
-                Contact
-              </Link>
+              {links.map((l) => (
+                <Link
+                  key={l}
+                  href={`#${l.toLowerCase()}`}
+                  className="block text-sm transition-colors duration-150"
+                  style={{ color: "var(--cp-muted)" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "var(--cp-text)")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "var(--cp-muted)")}
+                >
+                  {l}
+                </Link>
+              ))}
             </div>
           </div>
 
+          {/* Subscribe */}
           <div>
-            <h3 className="font-semibold mb-4">Follow Us</h3>
-            <div className="flex space-x-4">
-              <Link
-                href="https://www.instagram.com/akash.halder.5"
-                className={`transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  }`}
-              >
-                <Instagram className="w-5 h-5" />
-              </Link>
-              <Link
-                href="https://x.com/AkashHalder1623"
-                className={`transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  }`}
-              >
-                <Twitter className="w-5 h-5" />
-              </Link>
-              <Link
-                href="https://www.facebook.com/Akash345hal"
-                className={`transition-colors ${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                  }`}
-              >
-                <Facebook className="w-5 h-5" />
-              </Link>
-            </div>
+            <h4
+              className="text-xs font-semibold tracking-widest mb-4"
+              style={{ color: "var(--cp-red)", textTransform: "uppercase" }}
+            >
+              YouTube
+            </h4>
+            <Link
+              href="https://www.youtube.com/@technicalranch1623?sub_confirmation=1"
+              target="_blank"
+              className="cp-btn-primary"
+              style={{ fontSize: "12px", padding: "8px 14px", display: "inline-flex" }}
+            >
+              <Youtube size={13} />
+              Subscribe Free
+            </Link>
           </div>
         </div>
 
+        {/* Bottom bar */}
         <div
-          className={`flex flex-col md:flex-row justify-between items-center pt-8 border-t ${darkMode ? "border-gray-800" : "border-gray-200"
-            }`}
+          className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6"
+          style={{ borderTop: "1px solid var(--cp-border)" }}
         >
-          <div className={`text-sm mb-4 md:mb-0 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-            © 2024 Technical Ranch. All rights reserved.
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
+          <span className="text-xs" style={{ color: "var(--cp-muted)" }}>
+            © {new Date().getFullYear()} Technical Ranch. All rights reserved.
+          </span>
+          <button
             onClick={scrollToTop}
-            className={`${darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"}`}
+            className="flex items-center gap-2 text-xs transition-colors duration-150"
+            style={{ color: "var(--cp-muted)", background: "none", border: "none", cursor: "pointer" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "var(--cp-text)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "var(--cp-muted)")}
           >
-            <ArrowUp className="w-4 h-4 mr-2" />
+            <ArrowUp size={13} />
             Back to top
-          </Button>
+          </button>
         </div>
       </div>
     </footer>

@@ -1,240 +1,109 @@
-import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
-import { useInView } from "react-intersection-observer"
-import { cn } from "@/lib/utils"
-import { useEffect, useState } from "react"
+"use client"
 
-interface Stat {
-  value: number
-  label: string
-  prefix?: string
-  suffix?: string
-}
+import { useEffect, useState } from "react"
+import { useInView } from "react-intersection-observer"
 
 interface StatsSectionProps {
-  darkMode: boolean
   subscriberCount: number
   videoCount: number
   viewCount: number
-  isLoading?: boolean
-  error?: string
 }
 
-function animateValue(start: number, end: number, duration: number, setValue: (value: number) => void) {
-  const startTimestamp = performance.now()
-  
-  const updateValue = (timestamp: number) => {
-    const progress = Math.min((timestamp - startTimestamp) / duration, 1)
-    const easeProgress = 1 - Math.pow(1 - progress, 3) // Cubic ease-out
-    const currentValue = Math.floor(start + (end - start) * easeProgress)
-    setValue(currentValue)
-    
-    if (progress < 1) {
-      requestAnimationFrame(updateValue)
-    }
-  }
-  
-  requestAnimationFrame(updateValue)
-}
-
-function StatCard({ 
-  stat, 
-  darkMode, 
-  inView, 
-  delay 
-}: { 
-  stat: Stat
-  darkMode: boolean
-  inView: boolean
-  delay: number 
-}) {
-  const [displayValue, setDisplayValue] = useState(0)
+function useAnimatedValue(target: number, inView: boolean, delay = 0) {
+  const [value, setValue] = useState(0)
 
   useEffect(() => {
-    if (inView) {
-      const timeout = setTimeout(() => {
-        animateValue(0, stat.value, 2000, setDisplayValue)
-      }, delay)
-      return () => clearTimeout(timeout)
-    }
-  }, [inView, stat.value, delay])
+    if (!inView) return
+    const timer = setTimeout(() => {
+      const start = performance.now()
+      const duration = 1800
+      const tick = (now: number) => {
+        const p = Math.min((now - start) / duration, 1)
+        const ease = 1 - Math.pow(1 - p, 3)
+        setValue(Math.floor(target * ease))
+        if (p < 1) requestAnimationFrame(tick)
+        else setValue(target)
+      }
+      requestAnimationFrame(tick)
+    }, delay)
+    return () => clearTimeout(timer)
+  }, [inView, target, delay])
 
-  return (
-    <Card
-      className={cn(
-        "relative overflow-hidden transition-all duration-700 transform group hover:scale-105",
-        darkMode 
-          ? "bg-gray-900/50 border-gray-700 hover:bg-gray-900/80" 
-          : "bg-white/80 border-gray-200 hover:shadow-lg",
-        inView ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-      )}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      <div
-        className={cn(
-          "absolute inset-0 opacity-10 transition-opacity duration-300 group-hover:opacity-20",
-          darkMode 
-            ? "bg-gradient-to-br from-blue-500 to-purple-600" 
-            : "bg-gradient-to-br from-gray-100 to-blue-100"
-        )}
-      />
-      <div className="relative p-8 text-center">
-        <div className="flex items-center justify-center space-x-1">
-          {stat.prefix && (
-            <span className={cn(
-              "text-4xl md:text-5xl font-bold",
-              darkMode ? "text-gray-300" : "text-gray-900"
-            )}>
-              {stat.prefix}
-            </span>
-          )}
-          <span className={cn(
-            "text-4xl md:text-5xl font-bold tracking-tight",
-            darkMode ? "text-white" : "text-gray-900"
-          )}>
-            {displayValue.toLocaleString()}
-          </span>
-          {stat.suffix && (
-            <span className={cn(
-              "text-4xl md:text-5xl font-bold",
-              darkMode ? "text-gray-300" : "text-gray-900"
-            )}>
-              {stat.suffix}
-            </span>
-          )}
-        </div>
-        <p className={cn(
-          "mt-4 text-sm font-medium",
-          darkMode ? "text-gray-400" : "text-gray-600"
-        )}>
-          {stat.label}
-        </p>
-      </div>
-    </Card>
-  )
+  return value
 }
 
-export function StatsSection({
-  darkMode,
-  subscriberCount,
-  videoCount,
-  viewCount,
-  isLoading = false,
-  error,
-}: StatsSectionProps) {
-  const { ref, inView } = useInView({
-    threshold: 0.2,
-    triggerOnce: true,
-  })
+export function StatsSection({ subscriberCount, videoCount, viewCount }: StatsSectionProps) {
+  const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true })
 
-  const stats: Stat[] = [
-    {
-      value: subscriberCount,
-      label: "Growing Subscribers",
-      prefix: "",
-      suffix: "+",
-    },
-    {
-      value: videoCount,
-      label: "Videos Published",
-    },
-    {
-      value: viewCount,
-      label: "Total Video Views",
-      suffix: "+",
-    },
+  const subs  = useAnimatedValue(subscriberCount, inView, 0)
+  const vids  = useAnimatedValue(videoCount,      inView, 150)
+  const views = useAnimatedValue(viewCount,        inView, 300)
+
+  const stats = [
+    { value: subs,  suffix: "+", label: "Subscribers",   sub: "and growing" },
+    { value: vids,  suffix: "",  label: "Videos",         sub: "published" },
+    { value: views, suffix: "+", label: "Total Views",    sub: "across all videos" },
   ]
-
-  if (error) {
-    return (
-      <div className={cn(
-        "px-6 lg:px-12 py-20 text-center",
-        // darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
-        darkMode ? "bg-gray-800/50" : "bg-transparent"
-      )}>
-        <p className="text-red-500">Error loading statistics: {error}</p>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <div className={cn(
-        "px-6 lg:px-12 py-20",
-        // darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
-        darkMode ? "bg-gray-800/50" : "bg-transparent"
-      )}>
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <Card
-                key={i}
-                className={cn(
-                  "animate-pulse",
-                  darkMode ? "bg-gray-900/50 border-gray-700" : "bg-white/80 border-gray-200"
-                )}
-              >
-                <div className="p-8">
-                  <div className={cn(
-                    "h-10 w-32 mx-auto rounded",
-                    darkMode ? "bg-gray-800" : "bg-gray-200"
-                  )} />
-                  <div className={cn(
-                    "h-4 w-24 mx-auto mt-4 rounded",
-                    darkMode ? "bg-gray-800" : "bg-gray-200"
-                  )} />
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <section
+      id="stats"
       ref={ref}
-      className={cn(
-        "px-6 lg:px-12 py-20 relative overflow-hidden",
-        darkMode ? "bg-gray-800/50" : "bg-transparent"
-        // darkMode ? "bg-gray-800/50" : "bg-gray-50/80"
-      )}
+      className="px-6 lg:px-12 py-24 relative overflow-hidden"
+      style={{ background: "var(--cp-bg)" }}
     >
+      {/* Background accent */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-30"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 40% at 50% 100%, rgba(239,68,68,0.08) 0%, transparent 70%)",
+        }}
+      />
+
       <div className="max-w-6xl mx-auto relative z-10">
+
+        {/* Header */}
         <div className="text-center mb-16">
-          <Badge
-            variant="outline"
-            className={cn(
-              "mb-4",
-              darkMode ? "border-gray-700 text-gray-300" : "border-gray-500 text-gray-700"
-            )}
-          >
-            Our Growth
-          </Badge>
-          <h2 className={cn(
-            "text-4xl font-bold mb-6",
-            darkMode ? "text-white" : "text-gray-900"
-          )}>
-            Community Milestones
+          <div className="cp-badge cp-badge-neutral mb-5 mx-auto" style={{ width: "fit-content" }}>
+            By The Numbers
+          </div>
+          <h2 className="display-lg" style={{ color: "var(--cp-white)" }}>
+            COMMUNITY <span style={{ color: "var(--cp-red)" }}>MILESTONES</span>
           </h2>
-          <p className={cn(
-            "text-xl max-w-2xl mx-auto",
-            darkMode ? "text-gray-300" : "text-gray-600"
-          )}>
-            Growing together with our tech-savvy community
-          </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {stats.map((stat, index) => (
-            <StatCard
-              key={index}
-              stat={stat}
-              darkMode={darkMode}
-              inView={inView}
-              delay={index * 100}
-            />
+        {/* Stats grid */}
+        <div className="grid md:grid-cols-3 gap-px" style={{ background: "var(--cp-border)" }}>
+          {stats.map((stat, i) => (
+            <div
+              key={i}
+              className="p-12 text-center group transition-colors duration-200"
+              style={{
+                background: "var(--cp-surface)",
+                opacity: inView ? 1 : 0,
+                transform: inView ? "translateY(0)" : "translateY(24px)",
+                transition: `opacity 0.6s ease ${i * 150}ms, transform 0.6s ease ${i * 150}ms, background 0.2s`,
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = "var(--cp-surface2)")}
+              onMouseLeave={e => (e.currentTarget.style.background = "var(--cp-surface)")}
+            >
+              <div
+                className="display-xl mb-2"
+                style={{ color: "var(--cp-white)", fontSize: "clamp(48px, 6vw, 80px)" }}
+              >
+                {stat.value.toLocaleString()}
+                <span style={{ color: "var(--cp-red)" }}>{stat.suffix}</span>
+              </div>
+              <div className="text-base font-semibold mb-1" style={{ color: "var(--cp-text)" }}>
+                {stat.label}
+              </div>
+              <div className="text-sm" style={{ color: "var(--cp-muted)" }}>{stat.sub}</div>
+              <div
+                className="mt-6 mx-auto w-0 group-hover:w-12 h-px transition-all duration-300"
+                style={{ background: "var(--cp-red)" }}
+              />
+            </div>
           ))}
         </div>
       </div>
