@@ -36,10 +36,7 @@ export function Navigation() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div
-              className="w-8 h-8 rounded-full overflow-hidden ring-1 transition-all duration-200"
-              style={{ ringColor: "var(--cp-border2)" }}
-            >
+            <div className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-[var(--cp-border2)] transition-all duration-200">
               <Image
                 src="/logo.png"
                 alt="Technical Ranch"
