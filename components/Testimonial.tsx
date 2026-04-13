@@ -80,7 +80,7 @@ function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] 
         className="text-3xl font-bold leading-none mb-3"
         style={{ color: "var(--cp-red)", fontFamily: "Georgia, serif", opacity: 0.6 }}
       >
-        "
+       &quot;
       </div>
       <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--cp-muted)" }}>
         {testimonial.comment}
