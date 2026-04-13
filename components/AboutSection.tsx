@@ -89,8 +89,7 @@ export function AboutSection({ videoCount }: AboutSectionProps) {
               {/* Avatar */}
               <div className="flex justify-center mb-6">
                 <div
-                  className="w-28 h-28 rounded-full overflow-hidden ring-2"
-                  style={{ ringColor: "var(--cp-red)" }}
+                 className="w-28 h-28 rounded-full overflow-hidden ring-2 ring-[var(--cp-red)]"
                 >
                   <Image
                     src="/logo.png"
