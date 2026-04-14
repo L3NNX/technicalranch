@@ -49,13 +49,14 @@ export default function TechnicalRanchLanding() {
 
     const load = async () => {
       try {
-        const videos = await fetchVideos(API_KEY, CHANNEL_ID, formatDuration)
+        const [videos, stats] = await Promise.all([
+          fetchVideos(API_KEY, CHANNEL_ID, formatDuration),
+          fetchChannelStats(API_KEY, CHANNEL_ID),
+        ])
         setFeaturedVideos(videos)
-        setVideoCount(videos.length)
-
-        const stats = await fetchChannelStats(API_KEY, CHANNEL_ID)
         setSubscriberCount(stats.subscriberCount)
         setViewCount(stats.viewCount)
+        setVideoCount(stats.videoCount) // real count from channel API
       } catch (e) {
         console.error("Failed to load YouTube data", e)
       }
